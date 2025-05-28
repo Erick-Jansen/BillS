@@ -1,0 +1,130 @@
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel - Bill$</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .botao-principal {
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .botao-secundario {
+            font-size: 1rem;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .duvida, .curiosidade {
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .resposta {
+            display: none;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .mostrar {
+            display: block;
+        }
+        .seta {
+            float: right;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Olá, {{ primeiro_nome }}! Seja bem-vindo ao <span style="color: green;">Bill$</span></h1>
+
+    <form action="/transacoes">
+        <button class="botao-principal">Ganhos, Gastos e Histórico</button>
+    </form>
+
+    <form action="/logout" method="get">
+        <button class="botao-secundario">Sair</button>
+    </form>
+
+    <button class="botao-secundario" onclick="mostrarDuvidas()">Dúvidas Frequentes</button>
+    <button class="botao-secundario" onclick="mostrarCuriosidade()">Curiosidades</button>
+
+    <div id="secao-duvidas" class="duvida" style="display: none;">
+        <h2>Dúvidas Frequentes</h2>
+        {% for duvida in duvidas %}
+            <div>
+                <p><strong>{{ duvida.pergunta }}</strong> <span class="seta" onclick="alternarResposta('resp{{ loop.index }}')">▶</span></p>
+                <p id="resp{{ loop.index }}" class="resposta">{{ duvida.resposta }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="secao-curiosidade" class="curiosidade" style="display: none;">
+        <h2>Curiosidade</h2>
+        <p id="curiosidade-texto"></p>
+    </div>
+
+    <script>
+        function alternarResposta(id) {
+            const resposta = document.getElementById(id);
+            resposta.classList.toggle('mostrar');
+        }
+
+        function mostrarDuvidas() {
+            const secao = document.getElementById('secao-duvidas');
+            secao.style.display = secao.style.display === 'none' ? 'block' : 'none';
+        }
+
+        const curiosidades = [
+            "Guardar dinheiro no colchão pode desvalorizar seu valor com o tempo.",
+            "O Tesouro Direto é uma das formas mais seguras de investir.",
+            "Educação financeira não é só economizar, mas saber gastar bem.",
+            "O cartão de crédito não é uma renda extra!",
+            "Anotar gastos diários ajuda a controlar o orçamento.",
+            "O ideal é guardar pelo menos 10% do que se ganha.",
+            "Investimentos têm diferentes níveis de risco. Estude antes de aplicar.",
+            "Dinheiro na poupança perde para a inflação em muitos casos.",
+            "Criar metas financeiras aumenta a motivação para poupar.",
+            "Ter um fundo de emergência é essencial para imprevistos."
+        ];
+
+        let curiosidadesVistas = [];
+
+        function mostrarCuriosidade() {
+            const div = document.getElementById('secao-curiosidade');
+            div.style.display = 'block';
+
+            if (curiosidadesVistas.length === curiosidades.length) {
+                curiosidadesVistas = [];
+            }
+
+            let nova;
+            do {
+                nova = Math.floor(Math.random() * curiosidades.length);
+            } while (curiosidadesVistas.includes(nova));
+
+            curiosidadesVistas.push(nova);
+            document.getElementById('curiosidade-texto').innerText = curiosidades[nova];
+        }
+    </script>
+</body>
+</html>

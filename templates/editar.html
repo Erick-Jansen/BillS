@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Transação - Bill$</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Editar {{ 'Ganho' if tipo == 'ganho' else 'Gasto' }}</h1>
+
+        <form method="post">
+            <label for="descricao">Descrição:</label>
+            <input type="text" name="descricao" id="descricao" value="{{ transacao.descricao }}" required>
+
+            <label for="valor">Valor:</label>
+            <input type="text" name="valor" id="valor" value="{{ transacao.valor }}" required>
+
+            <label for="data">Data:</label>
+            <input type="text" name="data" id="data" value="{{ transacao.data }}">
+
+            <button type="submit">Salvar Alterações</button>
+        </form>
+
+        <form action="{{ url_for('transacoes') }}">
+            <button class="voltar">Cancelar</button>
+        </form>
+    </div>
+</body>
+</html>

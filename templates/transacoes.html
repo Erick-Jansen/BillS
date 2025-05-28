@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ganhos, Gastos e Histórico - Bill$</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="container">
+
+        <h1>Ganhos, Gastos e Histórico</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for categoria, mensagem in messages %}
+                    <div class="mensagem-{{ categoria }}">{{ mensagem }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('transacoes') }}">
+            <label for="tipo">Tipo:</label>
+            <select name="tipo" id="tipo" required>
+                <option value="ganho">Ganho</option>
+                <option value="gasto">Gasto</option>
+            </select>
+
+            <label for="descricao">Descrição:</label>
+            <input type="text" name="descricao" id="descricao" maxlength="100" placeholder="Descrição da transação" required />
+
+            <label for="valor">Valor:</label>
+            <input type="text" name="valor" id="valor" placeholder="Ex: 1.000,45" required />
+
+            <label for="data">Data (opcional):</label>
+            <input type="text" name="data" id="data" placeholder="dd/mm/aaaa" maxlength="10" />
+
+            <button type="submit">Adicionar</button>
+        </form>
+
+        <div class="historico">
+            <h2>Ganhos</h2>
+            {% if ganhos %}
+                <table>
+                    <tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Ações</th></tr>
+                    {% for g in ganhos %}
+                    <tr>
+                        <form method="POST" action="{{ url_for('editar_transacao', tipo='ganho', index=loop.index0) }}">
+                            <td><input type="text" name="descricao" value="{{ g.descricao }}" required></td>
+                            <td><input type="text" name="valor" value="{{ g.valor }}" required></td>
+                            <td><input type="text" name="data" value="{{ g.data }}"></td>
+                            <td style="white-space: nowrap;">
+                                <form method="POST" action="{{ url_for('excluir_transacao', tipo='ganho', index=loop.index0) }}" style="display:inline;">
+                                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este ganho?')" style="margin-right: 8px;">Excluir</button>
+                                </form>
+                                <button type="submit">Salvar</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>Não há ganhos cadastrados.</p>
+            {% endif %}
+
+            <h2>Gastos</h2>
+            {% if gastos %}
+                <table>
+                    <tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Ações</th></tr>
+                    {% for g in gastos %}
+                    <tr>
+                        <form method="POST" action="{{ url_for('editar_transacao', tipo='gasto', index=loop.index0) }}">
+                            <td><input type="text" name="descricao" value="{{ g.descricao }}" required></td>
+                            <td><input type="text" name="valor" value="{{ g.valor }}" required></td>
+                            <td><input type="text" name="data" value="{{ g.data }}"></td>
+                            <td style="white-space: nowrap;">
+                                <form method="POST" action="{{ url_for('excluir_transacao', tipo='gasto', index=loop.index0) }}" style="display:inline;">
+                                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este gasto?')" style="margin-right: 8px;">Excluir</button>
+                                </form>
+                                <button type="submit">Salvar</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>Não há gastos cadastrados.</p>
+            {% endif %}
+        </div>
+
+        <div class="bloco-saldos">
+            <h2>Saldos</h2>
+            <p>Saldo total:
+                <span class="saldo
+                    {% if saldo_total.startswith('-') %}
+                        negativo
+                    {% elif saldo_total == '0,00' %}
+                        neutro
+                    {% else %}
+                        positivo
+                    {% endif %}
+                ">
+                    R$ {{ saldo_total }}
+                </span>
+            </p>
+            <p>Saldo do mês:
+                <span class="saldo
+                    {% if saldo_mes.startswith('-') %}
+                        negativo
+                    {% elif saldo_mes == '0,00' %}
+                        neutro
+                    {% else %}
+                        positivo
+                    {% endif %}
+                ">
+                    R$ {{ saldo_mes }}
+                </span>
+            </p>
+        </div>
+
+        <form action="{{ url_for('painel') }}">
+            <button class="voltar">Voltar ao Painel</button>
+        </form>
+
+    </div>
+</body>
+</html>
